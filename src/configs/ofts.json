@@ -1,0 +1,16 @@
+{
+  "usdx": {
+    "name": "USDX",
+    "symbol": "USDX",
+    "decimals": "6",
+    "addresses": {
+      "114": "0x6ccB96ae6D52e88ed2269288F5e47bD2914C2785",
+      "11155111": "0x4C98e6e4167DF322B9bbb48a508f7dF3c69E85e5",
+      "80002": "0x72219A742A8fa878aB893b64AA1873a2F3B8D67C"
+    },
+    "addressesBackup": {
+      "1": "0x7A486F809c952a6f8dEc8cb0Ff68173F2B8ED56c",
+      "14": "0x4A771Cc1a39FDd8AA08B8EA51F7Fd412e73B3d2B"
+    }
+  }
+}

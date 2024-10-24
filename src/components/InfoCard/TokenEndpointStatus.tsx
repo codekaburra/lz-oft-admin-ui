@@ -38,7 +38,7 @@ export const TokenEndpointStatus = () => {
           {oftStatusByChainId && (
             <div className={`grid grid-flow-row-dense grid-cols-${columnSize}`}>
               <div
-                className={`text-center text-lg font-bold text-gray-800 md:text-3xl dark:text-neutral-200 col-span-${columnSize}`}
+                className={`col-span-full text-center text-lg font-bold text-gray-800 md:text-3xl dark:text-neutral-200`}
                 key={`EndpointStatus`}
               ></div>
               {Object.keys(oftStatusByChainId).map((chainId) => (
@@ -47,7 +47,7 @@ export const TokenEndpointStatus = () => {
                 </div>
               ))}
               <div
-                className={`text-center text-lg font-bold text-gray-800 md:text-3xl dark:text-neutral-200 col-span-${columnSize}`}
+                className={`col-span-full text-center text-lg font-bold text-gray-800 md:text-3xl dark:text-neutral-200`}
                 key={`TokenStatus`}
               >
                 OFT Status

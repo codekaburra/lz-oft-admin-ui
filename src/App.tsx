@@ -6,6 +6,7 @@ import { NavBar } from "./components/nav/NavBar";
 import { Mint } from "./components/Mint";
 import { Burn } from "./components/Burn";
 import { TokenEndpointStatus } from "./components/InfoCard/TokenEndpointStatus";
+import { UserOFTBalance } from "./components/InfoCard/UserOFTBalance";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
               <div className="grid grid-flow-row-dense grid-cols-5">
                 <div className="col-span-2">
                   <UserBalance />
+                  <UserOFTBalance />
                 </div>
                 <div className="col-span-3">
                   <Bridge />

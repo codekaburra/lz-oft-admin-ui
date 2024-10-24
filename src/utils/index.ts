@@ -1,11 +1,11 @@
 import { BigNumber } from "bignumber.js";
-import { OFT_CONFIGS_OLD } from "~/const/ofts";
+import { CHAINS } from "~/const/chains";
 import { EIP1193Provider, IERC20Balance } from "~/vite-env";
 export * from "./endpoint";
 export * from "./oft";
 
 export function isSupportedChainId(chainId: string) {
-  return OFT_CONFIGS_OLD[chainId];
+  return CHAINS[chainId] !== null;
 }
 
 export const toBaseUnit = (amount: BigNumber | string | number, decimals: number = 18) => {

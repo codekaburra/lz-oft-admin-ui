@@ -7,11 +7,15 @@ import { formatBalance, getEndpointId, getOFTContract, getOFTQuoteSend, toBaseUn
 import { ILZMessageFee, ILZSendCallParam } from "~/vite-env";
 import { TransactionExplorer } from "./Explorer";
 import BigNumber from "bignumber.js";
+import { useTokenSelector } from "~/hooks/useTokenSelectorProviderf";
 
 export const Bridge = () => {
   const { selectedWallet, userAddress } = useWalletProvider();
+  const { selectedToken } = useTokenSelector();
   const [transfers, setTransfers] = useState<ILZSendCallParam[]>([]);
   const [amount, setAmount] = useState<string>();
+  const [contractAddress, setContractAdderss] = useState<string>();
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [fromChainId, setFromChainId] = useState<string>();
   const [toChainId, setToChainId] = useState<string>();
   const [inputAddress, setInputAddress] = useState<string>();
@@ -23,6 +27,13 @@ export const Bridge = () => {
     if (!selectedWallet) return;
     if (!selectedWallet?.provider || !userAddress || !selectedWallet.chainId) return;
     setFromChainId(selectedWallet.chainId);
+    const address = selectedToken?.addresses[selectedWallet.chainId];
+    if (address) {
+      setContractAdderss(address);
+      setErrorMessage(undefined);
+    } else {
+      setErrorMessage("Contract Address for this chain is not provided");
+    }
   }, [selectedWallet, userAddress]);
 
   useEffect(() => {
@@ -76,10 +87,10 @@ export const Bridge = () => {
   };
 
   const estimateFee = () => {
-    if (selectedWallet && fromChainId && toChainId && amount && inputAddress) {
+    if (selectedWallet && fromChainId && toChainId && amount && inputAddress && contractAddress) {
       const sendParam = buildSendParam();
       if (sendParam) {
-        getOFTQuoteSend(selectedWallet, sendParam).then((messageFee) => {
+        getOFTQuoteSend(selectedWallet, contractAddress, sendParam).then((messageFee) => {
           if (messageFee) {
             setMessageFee(messageFee);
           }
@@ -90,7 +101,16 @@ export const Bridge = () => {
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (selectedWallet && fromChainId && toChainId && amount && inputAddress && messageFee && refundAddress) {
+    if (
+      selectedWallet &&
+      fromChainId &&
+      toChainId &&
+      amount &&
+      inputAddress &&
+      messageFee &&
+      refundAddress &&
+      contractAddress
+    ) {
       const sendParam = buildSendParam();
       if (sendParam) {
         const transfer: ILZSendCallParam = {
@@ -100,7 +120,7 @@ export const Bridge = () => {
         };
         if (transfer) {
           setTransfers([transfer, ...transfers]);
-          getOFTContract(selectedWallet).then((contract) => {
+          getOFTContract(selectedWallet, contractAddress).then((contract) => {
             if (contract) {
               contract
                 .send(transfer.sendParam, transfer.messageFee, transfer.refundAddress, {
@@ -128,6 +148,13 @@ export const Bridge = () => {
               <p className="text-sm text-gray-600 dark:text-neutral-400">Bridge OFT via LayerZero</p>
             </div>
 
+            <div className="text-sm text-red-600">
+              {errorMessage && (
+                <div>
+                  <strong>Error:</strong> {errorMessage}
+                </div>
+              )}
+            </div>
             <form onSubmit={handleFormSubmit}>
               <div className="border-t border-gray-200 py-6 first:border-transparent first:pt-0 last:pb-0 dark:border-neutral-700 dark:first:border-transparent">
                 <div className="mt-2 space-y-3">

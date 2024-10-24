@@ -2,16 +2,13 @@ import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { CHAINS } from "~/const/chains";
 import { useWalletProvider } from "~/hooks/useWalletProvider";
-import { fetchBalance, formatBalance, getOFTContract } from "~/utils";
-import { IERC20Balance } from "~/vite-env";
-import { Loading, Row } from "./utils";
+import { fetchBalance, formatBalance } from "~/utils";
+import { Row } from "./utils";
 import { AddressExplorer } from "../Explorer";
-import { OFT_CONFIGS_OLD } from "~/const/ofts";
 
 export const UserBalance = () => {
   const { selectedWallet, userAddress } = useWalletProvider();
   const [userBalance, setUserBalance] = useState<BigNumber>();
-  const [oftUserBalance, setERC20UserBalance] = useState<IERC20Balance>();
   const chainId = selectedWallet?.chainId;
 
   useEffect(() => {
@@ -19,22 +16,6 @@ export const UserBalance = () => {
     if (!selectedWallet?.provider || !userAddress || !chainId) return;
     fetchBalance(selectedWallet.provider, userAddress).then((balance) => {
       balance && setUserBalance(balance);
-    });
-    getOFTContract(selectedWallet).then((contract) => {
-      if (contract) {
-        Promise.all([contract.balanceOf(userAddress), contract.decimals(), contract.name(), contract.symbol()]).then(
-          (result) => {
-            if (result) {
-              setERC20UserBalance({
-                rawBalance: result[0].toString(),
-                decimals: result[1].toString(),
-                name: result[2].toString(),
-                symbol: result[3].toString(),
-              });
-            }
-          },
-        );
-      }
     });
   }, [chainId, selectedWallet, userAddress]);
 
@@ -61,51 +42,11 @@ export const UserBalance = () => {
                   title="Native Balance"
                   textRight={`${formatBalance(userBalance)} ${selectedWallet.chainId ? CHAINS[selectedWallet.chainId].nativeCurrency : "ETH"}`}
                 />
-                <Row title="Contract Address">
-                  <AddressExplorer chainId={chainId} address={OFT_CONFIGS_OLD[chainId].contractAddress} />
-                </Row>
-                {!oftUserBalance && <Loading />}
-                {oftUserBalance && (
-                  <Row
-                    title="OFT Balance"
-                    textRight={`${formatBalance(oftUserBalance.rawBalance, oftUserBalance.decimals)} ${oftUserBalance.symbol}`}
-                  ></Row>
-                )}
               </ul>
             </div>
           </>
         )}
       </div>
     </div>
-  );
-};
-
-export const CheckboxLabel = (props: { isChecked: boolean }) => {
-  const { isChecked } = props;
-  return (
-    <span>
-      {isChecked && (
-        <svg
-          className="me-2 h-3.5 w-3.5 flex-shrink-0 text-green-500 dark:text-green-400"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-        </svg>
-      )}
-      {!isChecked && (
-        <svg
-          className="me-2 h-3.5 w-3.5 flex-shrink-0 text-gray-500 dark:text-gray-400"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-        </svg>
-      )}
-    </span>
   );
 };

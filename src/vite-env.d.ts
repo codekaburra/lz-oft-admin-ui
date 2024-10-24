@@ -119,9 +119,15 @@ interface IChainInfo {
   explorer: string;
   rpc: string;
 }
+
 interface IChainIdToEndpointId {
   [chainId: string]: string;
 }
+
+interface IOFTConfigs {
+  [index: number | string]: IOFTConfig;
+}
+
 interface IOFTConfig {
   name: string;
   symbol: string;

@@ -1,6 +1,5 @@
 import { BrowserProvider, ethers } from "ethers";
 import OFT_ABI from "~/abi/OFT.json";
-import { OFT_CONFIGS_OLD } from "~/const/ofts";
 import {
   EIP6963ProviderDetailExtended,
   IChainIdToEndpointId,
@@ -17,13 +16,9 @@ import { BigNumberish } from "ethers";
 import { CHAINS } from "~/const/chains";
 import { JsonRpcProvider } from "ethers";
 
-export async function getOFTContract(wallet: EIP6963ProviderDetailExtended) {
+export async function getOFTContract(wallet: EIP6963ProviderDetailExtended, contractAddress: string) {
   if (wallet?.provider && wallet.chainId && isSupportedChainId(wallet.chainId)) {
-    return intializeContract(
-      OFT_CONFIGS_OLD[wallet.chainId].contractAddress,
-      OFT_ABI,
-      new BrowserProvider(wallet.provider),
-    );
+    return intializeContract(contractAddress, OFT_ABI, new BrowserProvider(wallet.provider));
   }
 }
 
@@ -45,9 +40,10 @@ export async function intializeContract(
 
 export async function getOFTQuoteSend(
   selectedWallet: EIP6963ProviderDetailExtended,
+  contractAddress: string,
   sendParam: ILZSendParam,
 ): Promise<ILZMessageFee | undefined> {
-  const contract = await getOFTContract(selectedWallet);
+  const contract = await getOFTContract(selectedWallet, contractAddress);
   if (contract) {
     const result = await contract.quoteSend(sendParam, false);
     console.log("quoteSend result", sendParam, result);

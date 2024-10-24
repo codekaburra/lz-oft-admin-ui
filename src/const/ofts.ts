@@ -1,9 +1,4 @@
 import { IOFTConfig, IOFTConfigOld } from "~/vite-env";
-import json from "~/configs/ofts.json";
-
-export const OFT_CONFIGS: {
-  [oftId: string]: IOFTConfig;
-} = json;
 
 export const USDX_DECIMALS = 6;
 
